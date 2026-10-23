@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constelación de un Bienio • Jas Moon</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display, Plus Jakarta Sans & Special Elite -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Special+Elite&display=swap" rel="stylesheet">
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        night: '#070a14',
+                        deepspace: '#0c1021',
+                        gold: '#d4af37',
+                        goldlight: '#f3e5ab',
+                        cream: '#f9f6f0',
+                        starlight: '#e2e8f0'
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        typewriter: ['"Special Elite"', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #070a14;
+            color: #f9f6f0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        .astral-card {
+            background: rgba(12, 16, 33, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+        .star {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); filter: drop-shadow(0 0 4px #d4af37); }
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #070a14; }
+        ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 4px; }
+    </style>
+</head>
+<body class="relative min-h-screen selection:bg-gold selection:text-night">
+
+    <!-- Pantalla de Bienvenida (Portal Estelar) -->
+    <div id="welcome-overlay" class="fixed inset-0 z-50 bg-night/95 backdrop-blur-xl flex items-center justify-center p-6 transition-opacity duration-700">
+        <div class="astral-card max-w-lg w-full p-8 md:p-12 rounded-3xl text-center space-y-6 border-gold/40 shadow-2xl">
+            <div class="w-16 h-16 mx-auto rounded-full bg-gold/10 border border-gold/40 flex items-center justify-center text-gold text-2xl animate-pulse">
+                <i class="fa-solid fa-star"></i>
+            </div>
+            <div class="space-y-2">
+                <span class="text-gold uppercase tracking-[0.3em] text-xs font-semibold block">Observatorio Privado</span>
+                <h2 class="font-serif text-3xl font-bold text-cream">Constelación de un Bienio</h2>
+                <p class="text-cream/70 text-sm font-light italic">Para mi querida Jas Moon</p>
+            </div>
+            <p class="text-cream/80 text-sm font-light leading-relaxed">
+                "Un mapa trazado con afecto y admiración para celebrar dos años de complicidad. Ingrese para activar la sintonía estelar y recorrer nuestros recuerdos."
+            </p>
+            <button onclick="enterSite()" class="w-full py-4 bg-gold text-night font-bold uppercase tracking-widest text-xs rounded-xl hover:bg-goldlight transition-all duration-300 shadow-lg cursor-pointer flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-play"></i>
+                <span>Entrar a la Constelación</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Elemento de Audio -->
+    <audio id="bgMusic" loop>
+        <source src="cancion.mp3" type="audio/mpeg">
+        Tu navegador no soporta elementos de audio.
+    </audio>
+
+    <!-- Fondo Dinámico de Estrellas -->
+    <div id="starfield" class="fixed inset-0 pointer-events-none z-0 overflow-hidden"></div>
+
+    <!-- Reproductor de Música Superior -->
+    <div class="fixed top-6 right-6 z-40">
+        <button id="musicToggleBtn" onclick="toggleMusic()" class="flex items-center space-x-2 bg-deepspace/90 border border-gold/60 backdrop-blur-md px-4 py-2.5 rounded-full text-gold hover:bg-gold hover:text-night transition-all duration-300 shadow-xl cursor-pointer">
+            <i id="musicIcon" class="fa-solid fa-play text-sm"></i>
+            <span id="musicText" class="text-xs font-bold tracking-wider uppercase">Reproducir Música</span>
+        </button>
+    </div>
+
+    <!-- Encabezado / Título de la Constelación -->
+    <header class="relative z-10 pt-20 pb-12 px-6 max-w-5xl mx-auto text-center border-b border-gold/20">
+        <div class="inline-block uppercase tracking-[0.4em] text-xs font-semibold text-gold mb-4 px-5 py-1.5 border border-gold/30 rounded-full bg-deepspace/50">
+            Observatorio Privado • Dos Años de Complicidad
+        </div>
+        <h1 class="font-serif text-5xl md:text-7xl font-bold tracking-tight text-cream mb-6">
+            CONSTELACIÓN <span class="italic text-gold font-normal">de un Bienio</span>
+        </h1>
+        <p class="text-goldlight/80 text-lg md:text-xl font-light italic max-w-2xl mx-auto font-serif">
+            "Para mi querida Jas Moon: un mapa trazado con afecto y admiración, donde cada coordenada estelar representa la infinita fortuna de compartir nuestra órbita."
+        </p>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="relative z-10 max-w-5xl mx-auto px-6 py-16 space-y-24">
+
+        <!-- SECCIÓN 1: Cartografía del Vínculo -->
+        <section class="astral-card p-8 md:p-14 rounded-3xl relative overflow-hidden">
+            <div class="absolute -right-12 -top-12 text-gold/5 pointer-events-none">
+                <i class="fa-solid fa-earth-americas text-9xl"></i>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                <div class="md:col-span-2 space-y-6">
+                    <span class="text-gold uppercase tracking-widest text-xs font-semibold block">Cartografía del Vínculo</span>
+                    <h2 class="font-serif text-3xl md:text-4xl font-bold text-cream">
+                        Dos años girando en sintonía perfecta
+                    </h2>
+                    <p class="text-cream/80 leading-relaxed font-light text-base md:text-lg">
+                        En el vasto mapa del tiempo y del universo, cumplir dos años recorriendo juntos este camino equivale a observar una cartografía cuidadosamente trazada. Admiro profundamente su inteligencia, su sensibilidad para transformar lo cotidiano en algo extraordinario y la elegancia con la que ilumina cada uno de mis días, mi querida Jas Moon.
+                    </p>
+                    <div class="pt-2 flex items-center space-x-4">
+                        <div class="h-px bg-gold/40 flex-1"></div>
+                        <span class="font-serif italic text-gold text-sm">Escrito con devoción infinita</span>
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <div class="relative w-48 h-48 md:w-56 md:h-56 rounded-full border border-gold/30 flex items-center justify-center bg-night/60 p-6 text-center shadow-inner group">
+                        <div class="absolute inset-2 rounded-full border border-dashed border-gold/20 animate-spin" style="animation-duration: 30s;"></div>
+                        <div class="space-y-2 z-10">
+                            <i class="fa-solid fa-compass-drafting text-gold text-3xl"></i>
+                            <h4 class="font-serif text-cream font-semibold text-sm">Órbita Compartida</h4>
+                            <p class="text-[11px] text-cream/70 font-light">Un bienio de afinidad absoluta</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE REGISTROS FOTOGRÁFICOS (Las 24 fotos completas) -->
+        <section class="space-y-8">
+            <div class="text-center max-w-2xl mx-auto">
+                <span class="text-gold uppercase tracking-widest text-xs font-semibold block mb-2">Álbum de Recuerdos</span>
+                <h2 class="font-serif text-3xl md:text-4xl font-bold text-cream">Registros Fotográficos</h2>
+                <p class="text-cream/70 text-sm md:text-base font-light mt-2">
+                    Nuestros 24 instantes capturados en el tiempo que inmortalizan esta travesía en común.
+                </p>
+            </div>
+
+            <div id="photo-gallery-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <!-- Generado dinámicamente con 24 fotos -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: Coordenadas Esenciales -->
+        <section class="space-y-8">
+            <div class="text-center max-w-2xl mx-auto">
+                <span class="text-gold uppercase tracking-widest text-xs font-semibold block mb-2">Navegación Estelar</span>
+                <h2 class="font-serif text-3xl md:text-4xl font-bold text-cream">Coordenadas Esenciales</h2>
+                <p class="text-cream/70 text-sm md:text-base font-light mt-2">
+                    Seleccione cada estrella del firmamento para revelar las reflexiones y virtudes que sostienen nuestra historia.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div onclick="setActiveStar(0)" id="star-btn-0" class="star-node astral-card p-6 rounded-2xl cursor-pointer border-gold/40 bg-deepspace/90 hover:border-gold transition-all duration-300">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-10 h-10 rounded-full bg-gold/10 border border-gold/40 flex items-center justify-center text-gold">
+                            <i class="fa-solid fa-star text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase tracking-widest text-gold font-semibold">Coordenada I</span>
+                            <h3 class="font-serif font-bold text-cream text-lg">La Mirada y la Calma</h3>
+                        </div>
+                    </div>
+                    <p class="text-xs text-cream/70 font-light">Su presencia como el refugio más seguro frente al vértigo del mundo.</p>
+                </div>
+                <div onclick="setActiveStar(1)" id="star-btn-1" class="star-node astral-card p-6 rounded-2xl cursor-pointer border-gold/20 bg-deepspace/60 hover:border-gold transition-all duration-300">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-10 h-10 rounded-full bg-gold/10 border border-gold/40 flex items-center justify-center text-gold">
+                            <i class="fa-solid fa-moon text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase tracking-widest text-gold font-semibold">Coordenada II</span>
+                            <h3 class="font-serif font-bold text-cream text-lg">La Conversación Infinita</h3>
+                        </div>
+                    </div>
+                    <p class="text-xs text-cream/70 font-light">El arte de compartir horas enteras donde el tiempo simplemente se disuelve.</p>
+                </div>
+                <div onclick="setActiveStar(2)" id="star-btn-2" class="star-node astral-card p-6 rounded-2xl cursor-pointer border-gold/20 bg-deepspace/60 hover:border-gold transition-all duration-300">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-10 h-10 rounded-full bg-gold/10 border border-gold/40 flex items-center justify-center text-gold">
+                            <i class="fa-solid fa-sun text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase tracking-widest text-gold font-semibold">Coordenada III</span>
+                            <h3 class="font-serif font-bold text-cream text-lg">El Futuro Elegido</h3>
+                        </div>
+                    </div>
+                    <p class="text-xs text-cream/70 font-light">La convicción absoluta de construir un mañana tomado de su mano.</p>
+                </div>
+            </div>
+
+            <div class="astral-card p-8 md:p-10 rounded-2xl border-gold/40 relative">
+                <div class="absolute top-4 right-4 text-gold/30 text-xs tracking-widest uppercase font-serif">Bitácora Estelar</div>
+                <div id="star-display" class="space-y-4"></div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: Sintonía de Recuerdos -->
+        <section class="astral-card p-8 md:p-12 rounded-3xl">
+            <div class="text-center max-w-2xl mx-auto mb-10">
+                <span class="text-gold uppercase tracking-widest text-xs font-semibold block mb-2">Sintonía de Recuerdos</span>
+                <h2 class="font-serif text-3xl md:text-4xl font-bold text-cream mb-3">Afinidad en Nuestro Bienio</h2>
+                <p class="text-cream/80 text-sm md:text-base font-light">
+                    Una breve sintonía interactiva sobre nuestra complicidad. Responda cada interrogante para desvelar un mensaje oculto.
+                </p>
+            </div>
+
+            <div id="trivia-container" class="max-w-2xl mx-auto space-y-8"></div>
+
+            <div id="trivia-complete" class="hidden text-center p-6 bg-gold/10 border border-gold/40 rounded-xl mt-8">
+                <h3 class="font-serif text-xl font-bold text-gold mb-1"><i class="fa-solid fa-certificate text-gold mr-2"></i> Sintonía Comprobada</h3>
+                <p class="text-cream/90 text-sm font-light">Nuestras frecuencias vitales sintonizan en un mismo compás eterno.</p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: Manuscrito Literario -->
+        <section class="astral-card p-8 md:p-14 rounded-3xl relative overflow-hidden">
+            <div class="absolute -right-16 -bottom-16 text-gold/5 pointer-events-none">
+                <i class="fa-solid fa-feather-pointed text-9xl"></i>
+            </div>
+            
+            <div class="max-w-2xl mx-auto text-center mb-8">
+                <span class="text-gold uppercase tracking-widest text-xs font-semibold block mb-2">Manuscrito Literario</span>
+                <h2 class="font-serif text-3xl md:text-4xl font-bold text-cream">Epístola para un Aniversario</h2>
+            </div>
+
+            <div class="bg-night/90 border border-gold/30 p-6 md:p-10 rounded-2xl shadow-inner relative">
+                <div class="absolute top-4 right-4 text-gold/40 text-xs tracking-widest uppercase font-serif">Manuscrito Original</div>
+                
+                <div id="typewriter-text" class="font-typewriter text-goldlight/90 text-sm md:text-base leading-relaxed min-h-[240px] whitespace-pre-line"></div>
+
+                <div class="mt-8 pt-6 border-t border-gold/20 flex justify-between items-center flex-wrap gap-4">
+                    <button onclick="restartTypewriter()" class="text-xs uppercase tracking-widest text-gold hover:text-cream transition-colors flex items-center space-x-2 bg-gold/10 hover:bg-gold/20 px-4 py-2 rounded-lg border border-gold/30 cursor-pointer">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Releer Epístola</span>
+                    </button>
+                    <span class="font-serif italic text-gold text-sm">Con todo el afecto de mi alma</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Pie de Página -->
+    <footer class="relative z-10 max-w-5xl mx-auto px-6 py-12 mt-16 text-center border-t border-gold/20">
+        <p class="font-serif italic text-gold text-lg mb-2">"Para mi querida Jas Moon, mi compañera de órbita, hoy y en cada ciclo venidero."</p>
+        <p class="text-xs uppercase tracking-[0.3em] text-cream/50">Constelación de un Bienio • Edición Especial Privada</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        function createStarfield() {
+            const container = document.getElementById('starfield');
+            if (!container) return;
+            const starCount = 45;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                const size = Math.random() * 2.5 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.top = `${Math.random() * 100}vh`;
+                const duration = Math.random() * 4 + 2;
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.animationDelay = `${Math.random() * 3}s`;
+                container.appendChild(star);
+            }
+        }
+
+        // Función al hacer clic en "Entrar a la Constelación"
+        function enterSite() {
+            const audio = document.getElementById('bgMusic');
+            const btnText = document.getElementById('musicText');
+            const musicIcon = document.getElementById('musicIcon');
+
+            audio.play().then(() => {
+                btnText.innerText = "Pausar Música";
+                musicIcon.classList.remove('fa-play');
+                musicIcon.classList.add('fa-pause');
+            }).catch(e => {
+                console.log("Audio bloqueado o faltante:", e);
+            });
+
+            const overlay = document.getElementById('welcome-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 700);
+
+            startTypewriter();
+        }
+
+        // Carga automática de las 24 fotos completas
+        function loadPhotos() {
+            const galleryContainer = document.getElementById('photo-gallery-container');
+            if (!galleryContainer) return;
+
+            const captions = [
+                "Instante de complicidad", "Nuestra órbita compartida", "Horizontes futuros", 
+                "Memorias estelares", "Senderos de afecto", "Complicidad eterna", 
+                "Destellos de felicidad", "Risas compartidas", "Paz a su lado", 
+                "Nuestro reflejo", "Instantes dorados", "Camino en paralelo", 
+                "Armonía cotidiana", "Miradas cómplices", "Luces del bienio", 
+                "Eterno presente", "Felicidad pura", "Compañía infinita", 
+                "Abrazo estelar", "Nuestra historia", "Siempre juntos",
+                "Constelación activa", "Magia compartida", "Destino en sintonía"
+            ];
+
+            for (let i = 1; i <= 24; i++) {
+                const photoCard = document.createElement('div');
+                photoCard.className = "astral-card p-4 rounded-2xl space-y-3 group hover:border-gold transition-all duration-300";
+                const captionText = captions[(i - 1) % captions.length];
+                
+                photoCard.innerHTML = `
+                    <div class="w-full h-96 rounded-xl overflow-hidden bg-night/95 border border-gold/20 flex items-center justify-center p-2 shadow-inner">
+                        <img src="FOTO (${i}).jpeg" alt="Recuerdo ${i}" class="max-h-full max-w-full object-contain group-hover:scale-102 transition-transform duration-500" onerror="this.onerror=null; this.src='FOTO (${i}).JPG';">
+                    </div>
+                    <p class="font-serif italic text-center text-goldlight text-sm">${captionText}</p>
+                `;
+                galleryContainer.appendChild(photoCard);
+            }
+        }
+
+        // Control para alternar entre Reproducir / Pausar la música con el botón superior
+        function toggleMusic() {
+            const audio = document.getElementById('bgMusic');
+            const btnText = document.getElementById('musicText');
+            const musicIcon = document.getElementById('musicIcon');
+
+            if (audio.paused) {
+                audio.play();
+                btnText.innerText = "Pausar Música";
+                musicIcon.classList.remove('fa-play');
+                musicIcon.classList.add('fa-pause');
+            } else {
+                audio.pause();
+                btnText.innerText = "Reproducir Música";
+                musicIcon.classList.remove('fa-pause');
+                musicIcon.classList.add('fa-play');
+            }
+        }
+
+        const starData = [
+            {
+                title: "La Mirada y la Calma",
+                subtitle: "Coordenada I • El Refugio Cotidiano",
+                text: "A lo largo de estos dos años, he comprendido que la verdadera paz no reside en la ausencia de ruido exterior, sino en la certeza de encontrar su mirada, mi querida Jas Moon. Cada momento a su lado es un recordatorio de que la elegancia y la bondad tienen un rostro definido."
+            },
+            {
+                title: "La Conversación Infinita",
+                subtitle: "Coordenada II • El Diálogo del Entendimiento",
+                text: "No hay espacio para la monotonía cuando compartimos un idioma propio hecho de complicidad, inquietudes intelectuales y risas compartidas. Cada charla con usted amplía mi perspectiva del mundo y enriquece mi existencia."
+            },
+            {
+                title: "El Futuro Elegido",
+                subtitle: "Coordenada III • La Órbita Compartida",
+                text: "Celebrar un bienio juntos es confirmar que volvería a elegir este mismo camino en cualquier universo posible. Su presencia es el eje central sobre el cual gira mi mayor aspiración: construir un porvenir lleno de amor y respeto mutuo."
+            }
+        ];
+
+        function setActiveStar(index) {
+            for (let i = 0; i < 3; i++) {
+                const btn = document.getElementById(`star-btn-${i}`);
+                if (btn) {
+                    if (i === index) {
+                        btn.classList.add('border-gold', 'bg-deepspace/90');
+                        btn.classList.remove('border-gold/20', 'bg-deepspace/60');
+                    } else {
+                        btn.classList.remove('border-gold', 'bg-deepspace/90');
+                        btn.classList.add('border-gold/20', 'bg-deepspace/60');
+                    }
+                }
+            }
+            const display = document.getElementById('star-display');
+            if (display) {
+                const data = starData[index];
+                display.innerHTML = `
+                    <span class="text-gold uppercase tracking-widest text-xs font-semibold block mb-1">${data.subtitle}</span>
+                    <h3 class="font-serif text-2xl md:text-3xl font-bold text-cream mb-3">${data.title}</h3>
+                    <p class="text-cream/80 font-light text-base md:text-lg leading-relaxed">${data.text}</p>
+                `;
+            }
+        }
+
+        const triviaData = [
+            {
+                question: "¿Cuál es el verdadero significado de haber recorrido este bienio juntos?",
+                options: [
+                    "Haber descubierto que el tiempo fluye con mayor sentido a su lado",
+                    "Construir un refugio sólido basado en el respeto y el afecto",
+                    "Comprender que nuestro destino es coincidir todos los días"
+                ],
+                correct: 2,
+                message: "¡Exacto, mi querida Jas Moon! Cada día compartido reafirma que nuestra coincidencia fue el mayor acierto del destino."
+            },
+            {
+                question: "¿Qué es lo que más engrandece cada amanecer a su lado?",
+                options: [
+                    "Saber que tengo a la mejor compañera de travesía",
+                    "La sabiduría y delicadeza con la que impregna mi vida",
+                    "La absoluta certeza de caminar tomados de la mano"
+                ],
+                correct: 1,
+                message: "¡Muy acertado! Su sensibilidad y elegancia intelectual transforman por completo mi perspectiva de la vida."
+            }
+        ];
+
+        let answeredCount = 0;
+
+        function renderTrivia() {
+            const container = document.getElementById('trivia-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            triviaData.forEach((item, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'bg-night/70 border border-gold/20 p-6 rounded-2xl space-y-4';
+                
+                let optsHTML = '';
+                item.options.forEach((opt, optIndex) => {
+                    optsHTML += `
+                        <button onclick="checkTrivia(${index}, ${optIndex}, this)" class="w-full text-left p-3.5 rounded-xl bg-deepspace/80 border border-gold/10 hover:border-gold/50 text-cream/90 text-sm md:text-base transition-all duration-200 flex items-center justify-between group cursor-pointer">
+                            <span>${opt}</span>
+                            <span class="w-5 h-5 rounded-full border border-gold/30 flex items-center justify-center text-xs text-transparent group-hover:border-gold">✓</span>
+                        </button>
+                    `;
+                });
+
+                qDiv.innerHTML = `
+                    <h3 class="font-serif text-lg font-semibold text-cream">
+                        <span class="text-gold mr-2 font-sans text-xs">0${index + 1}.</span> ${item.question}
+                    </h3>
+                    <div class="space-y-2 pt-2" id="trivia-opts-${index}">
+                        ${optsHTML}
+                    </div>
+                    <div id="trivia-feedback-${index}" class="hidden mt-3 p-3 rounded-xl text-sm italic"></div>
+                `;
+                container.appendChild(qDiv);
+            });
+        }
+
+        function checkTrivia(qIndex, optIndex, btnElement) {
+            const item = triviaData[qIndex];
+            const feedbackDiv = document.getElementById(`trivia-feedback-${qIndex}`);
+            if (!feedbackDiv) return;
+
+            feedbackDiv.classList.remove('hidden');
+
+            if (optIndex === item.correct) {
+                btnElement.classList.add('bg-gold/20', 'border-gold', 'text-goldlight');
+                feedbackDiv.className = "mt-3 p-3 rounded-xl bg-gold/10 border border-gold/30 text-goldlight text-sm italic";
+                feedbackDiv.innerHTML = `<i class="fa-solid fa-star mr-2 text-gold"></i> ${item.message}`;
+                
+                const optsContainer = document.getElementById(`trivia-opts-${qIndex}`);
+                if (optsContainer) {
+                    const buttons = optsContainer.getElementsByTagName('button');
+                    for (let btn of buttons) {
+                        btn.disabled = true;
+                        btn.classList.add('opacity-70', 'cursor-not-allowed');
+                    }
+                }
+
+                if (!item.isCorrectlyAnswered) {
+                    item.isCorrectlyAnswered = true;
+                    answeredCount++;
+                    if (answeredCount === triviaData.length) {
+                        const completeDiv = document.getElementById('trivia-complete');
+                        if (completeDiv) completeDiv.classList.remove('hidden');
+                    }
+                }
+            } else {
+                btnElement.classList.add('bg-red-950/40', 'border-red-500/50', 'text-red-200', 'opacity-60', 'cursor-not-allowed');
+                btnElement.disabled = true;
+                feedbackDiv.className = "mt-3 p-3 rounded-xl bg-red-950/30 border border-red-500/30 text-red-200 text-sm italic";
+                feedbackDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-2 text-red-400"></i> ¡Por poco, vuelve a intentar!`;
+            }
+        }
+
+        const letterText = `Mi querida Jas Moon:
+
+Al detener el ritmo del tiempo para reflexionar sobre este bienio que hoy celebramos, no puedo evitar experimentar un profundo sentimiento de gratitud. Dos años no son sino el prólogo de una gran obra que hemos sabido tejer con paciencia, complicidad y un afecto inquebrantable.
+
+Admiro su inteligencia, la lucidez con la que observa el mundo y la elegancia serena que aporta a cada uno de mis días. Estar a su lado es comprender que el hogar no se encuentra en un lugar físico, sino en la certeza de caminar tomados de la mano.
+
+Gracias por elegirme cada día, por ser mi refugio y mi mayor inspiración. Esta constelación digital es tan solo un pequeño reflejo de la inmensa fortuna que significa compartir la vida con usted.
+
+Con todo el amor y la devoción de mi alma, hoy y siempre.`;
+
+        let typewriterTimeout = null;
+
+        function startTypewriter() {
+            const container = document.getElementById('typewriter-text');
+            if (!container) return;
+            container.innerHTML = '';
+            let i = 0;
+            const speed = 35;
+
+            function type() {
+                if (i < letterText.length) {
+                    container.innerHTML += letterText.charAt(i) === '\n' ? '<br>' : letterText.charAt(i);
+                    i++;
+                    typewriterTimeout = setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        function restartTypewriter() {
+            if (typewriterTimeout) {
+                clearTimeout(typewriterTimeout);
+            }
+            startTypewriter();
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            createStarfield();
+            loadPhotos();
+            setActiveStar(0);
+            renderTrivia();
+        });
+    </script>
+</body>
+</html>
